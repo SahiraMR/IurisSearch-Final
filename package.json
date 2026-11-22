@@ -1,0 +1,23 @@
+{
+  "name": "jurisprudencia-penal-mvp",
+  "version": "2.0.0",
+  "description": "MVP académico: recuperación de jurisprudencia penal colombiana",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@libsql/client": "0.6.0",
+    "playwright": "^1.58.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "probar:oficial": "node scripts/probar_rama_judicial.mjs hurto",
+    "probar:anonimizacion": "node scripts/probar_anonimizacion.mjs",
+    "probar:metadatos": "node scripts/probar_consulta_oficial.mjs",
+    "probar:pdf": "node scripts/probar_pdf_oficial.mjs",
+    "probar:integracion": "node scripts/verificar_integracion.mjs"
+  }
+}

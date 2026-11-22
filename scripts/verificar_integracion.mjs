@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { anonimizar } from '../lib/texto.mjs';
+
+const base = new URL('../', import.meta.url);
+const server = fs.readFileSync(new URL('server.js',base),'utf8');
+const html = fs.readFileSync(new URL('public/index.html',base),'utf8');
+assert.match(server,/POST \/api\/oficial\/descargar/);
+assert.match(html,/Buscar jurisprudencia oficial/);
+assert.match(html,/Analizar con corpus local/);
+const salida=anonimizar('La víctima MARÍA FERNANDA LÓPEZ declaró. C.C. 1.023.456.789', {nombresConocidos:[{nombre:'MARÍA FERNANDA LÓPEZ',rol:'la víctima'}]}).texto;
+assert(!salida.includes('MARÍA FERNANDA LÓPEZ'));
+assert(salida.includes('declaró'));
+assert(salida.includes('documento de identidad reservado'));
+const { verificarDocumento, construirFragmentos } = await import('../lib/oficial_integrado.mjs');
+assert(verificarDocumento(['AHP147-2026 Radicación N° 74627'], 'AHP147-2026', '74627'));
+assert.throws(()=>verificarDocumento(['AHP147-2026 Radicación N° 74627'], 'SP999-2026','74627'));
+const frag=construirFragmentos({paginas:['La autoridad penitenciaria debe ejecutar el traslado a prisión domiciliaria según la decisión judicial.']},'traslado');
+assert.equal(frag[0].pagina,1);
+console.log('OK: rutas, búsqueda oficial principal, anonimización básica, metadatos y páginas.');

@@ -1,0 +1,10 @@
+import {readFile} from 'node:fs/promises';
+import {leerPDF,verificarDocumento,anonimizarPaginas} from '../lib/oficial_integrado.mjs';
+const pdf=await readFile(new URL('../fixtures/providencia_988480.pdf',import.meta.url));
+const {paginas,total}=await leerPDF(pdf);
+verificarDocumento(paginas,'AHP147-2026','74627');
+const seguras=anonimizarPaginas(paginas);
+const texto=seguras.join('\n');
+if (/PEDRO\s+W[IÍ]LMER\s+ABREO\s+PICO/i.test(texto)) throw Error('Nombre privado sin anonimizar');
+if (!texto.includes('AHP147-2026') || !texto.includes('74627')) throw Error('Metadatos perdidos');
+console.log(JSON.stringify({estado:'correcto',paginas:total,caracteres:paginas.join('').length,anonimizacionAccionante:'comprobada',metadatos:'comprobados'},null,2));
